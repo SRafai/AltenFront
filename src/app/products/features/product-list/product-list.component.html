@@ -4,11 +4,13 @@
 
 <p-dataView #dv [value]="products">
     <ng-template pTemplate="list" let-products>
-        @for (product of products; track product) {
+        <!-- Loop through products using *ngFor -->
+        <div *ngFor="let product of products; trackBy: trackProduct">
             <p-card class="block mb-2">
                 <span class="font-medium text-secondary text-sm">{{ product.category }}</span>
                 <div class="text-lg font-medium text-900 mt-2">{{ product.name }}</div>
                 <span class="font-medium text-secondary text-sm">{{ product.description }}</span>
+                <p class="font-medium text-secondary text-sm">Quantité: {{ product.quantity }}</p>
                 <div class="text-lg font-medium text-900 mt-2">{{ product.price | currency: 'EUR' }}</div>
                 <ng-template pTemplate="footer">
                     <div class="flex gap-3 mt-1">
@@ -18,7 +20,7 @@
                     </div>
                 </ng-template>
             </p-card>
-        }
+        </div>
     </ng-template>
 </p-dataView>
 

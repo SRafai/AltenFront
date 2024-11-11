@@ -35,9 +35,14 @@ import { environment } from '../../../environments/environment';
           })
         );
       }
+      public getProductsCount():Observable<number>{
+        return this.http.get<number>(this.path+'/count', {headers: this.getAuthHeaders()}).pipe(
+            tap((number) => number),
+        );
+      }
     
     public get(): Observable<Product[]> {
-        return this.http.get<Product[]>(this.path).pipe(
+        return this.http.get<Product[]>(this.path, {headers: this.getAuthHeaders()}).pipe(
             catchError((error) => {
                 return this.http.get<Product[]>("assets/products.json");
             }),
@@ -45,28 +50,25 @@ import { environment } from '../../../environments/environment';
         );
     }
 
-    public create(product: Product): Observable<boolean> {
-        return this.http.post<boolean>(this.path, product).pipe(
+    public create(product: Product): Observable<Product | null> {
+        return this.http.post<Product>(this.path, product, {headers: this.getAuthHeaders()}).pipe(
             catchError(() => {
-                return of(true);
+                return of(null);
             }),
             tap(() => this._products.update(products => [product, ...products])),
         );
     }
-
-    public update(product: Product): Observable<boolean> {
-        return this.http.patch<boolean>(`${this.path}/${product.id}`, product).pipe(
+    public update(product: Product): Observable<Product|null> {
+        return this.http.patch<Product>(`${this.path}/${product.id}`, product, { headers: this.getAuthHeaders() }).pipe(
             catchError(() => {
-                return of(true);
+                return of(null);
             }),
-            tap(() => this._products.update(products => {
-                return products.map(p => p.id === product.id ? product : p)
-            })),
+            tap(() => this._products.update(products => [product, ...products])),
         );
-    }
+    }    
 
     public delete(productId: number): Observable<boolean> {
-        return this.http.delete<boolean>(`${this.path}/${productId}`).pipe(
+        return this.http.delete<boolean>(`${this.path}/${productId}`, {headers: this.getAuthHeaders()}).pipe(
             catchError(() => {
                 return of(true);
             }),

@@ -37,6 +37,14 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
           required/> 
       </div>
       <div class="form-field">
+        <label for="quantity">Quantité</label>
+        <p-inputNumber 
+          [(ngModel)]="editedProduct().quantity" 
+          name="quantity"
+          mode="decimal"
+          required/> 
+      </div>
+      <div class="form-field">
         <label for="description">Description</label>
         <textarea pInputTextarea 
           id="description"

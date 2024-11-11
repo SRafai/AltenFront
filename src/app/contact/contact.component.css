@@ -1,0 +1,25 @@
+.contact-form {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+  }
+  
+  .contact-form h2 {
+    text-align: center;
+    color: #495057;
+    margin-bottom: 1.5rem;
+  }
+  
+  .p-field label {
+    font-weight: bold;
+    color: #495057;
+  }
+  
+  .p-field .p-inputtext,
+  .p-field .p-inputtextarea {
+    width: 100%;
+  }

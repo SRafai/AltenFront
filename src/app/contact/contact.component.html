@@ -1,0 +1,20 @@
+<div class="contact-form">
+    <h2>Contactez-nous</h2>
+    
+    <form (ngSubmit)="onSubmit()" #contactForm="ngForm" class="p-fluid">
+      <div class="p-field p-mb-3">
+        <label for="email" class="p-d-block">Email</label>
+        <input pInputText id="email" name="email" [(ngModel)]="email" required email placeholder="Votre email" class="p-inputtext-sm p-d-block" />
+      </div>
+  
+      <div class="p-field p-mb-3">
+        <label for="message" class="p-d-block">Message</label>
+        <textarea pInputTextarea id="message" name="message" [(ngModel)]="message" required maxlength="299" rows="5" placeholder="Votre message" class="p-inputtext-sm p-d-block"></textarea>
+      </div>
+  
+      <div class="p-field p-mt-3">
+        <button pButton label="Envoyer" icon="pi pi-send" type="submit" [disabled]="!contactForm.form.valid" class="p-button-sm p-button-primary"></button>
+      </div>
+    </form>
+  </div>
+  

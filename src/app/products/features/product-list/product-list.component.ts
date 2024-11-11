@@ -1,6 +1,7 @@
-import { CurrencyPipe } from "@angular/common";
+import { CurrencyPipe, CommonModule } from "@angular/common";
 import { Component, OnInit, inject, signal } from "@angular/core";
 import { AuthService } from "app/products/data-access/auth.service";
+import { CartService } from "app/products/data-access/cart.service";
 import { Product } from "app/products/data-access/product.model";
 import { ProductsService } from "app/products/data-access/products.service";
 import { ProductFormComponent } from "app/products/ui/product-form/product-form.component";
@@ -9,7 +10,6 @@ import { CardModule } from "primeng/card";
 import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
 import { PaginatorModule } from "primeng/paginator";
-import { last } from "rxjs";
 
 const emptyProduct: Product = {
   id: 0,
@@ -33,11 +33,12 @@ const emptyProduct: Product = {
   templateUrl: "./product-list.component.html",
   styleUrls: ["./product-list.component.scss"],
   standalone: true,
-  imports: [DataViewModule, CardModule, ButtonModule, DialogModule, PaginatorModule, ProductFormComponent, CurrencyPipe],
+  imports: [CommonModule,DataViewModule, CardModule, ButtonModule, DialogModule, PaginatorModule, ProductFormComponent, CurrencyPipe],
 })
 export class ProductListComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
   private readonly authService = inject(AuthService);
+  private readonly cartService = inject(CartService);
 
   public products: Product[] = [];
 
@@ -57,7 +58,6 @@ export class ProductListComponent implements OnInit {
         this.loadProducts();
       }
     });
-    this.loadProducts();
   }
   public onPageChange(event: any) {
     this.first = event.first;
@@ -65,12 +65,16 @@ export class ProductListComponent implements OnInit {
     this.loadProducts();
   }
 
+  trackProduct(index: number, product: any): number {
+    return product.id;
+  }
+  
+
   private loadProducts() {
-    // Adjust the get method to accept pagination parameters
-    this.productsService.getPaginated(this.first, this.rows).subscribe((response: any) => {
-      this.products = response.products;
-      this.totalRecords = response.totalRecords;
+    this.productsService.getPaginated(this.first, this.rows).subscribe((response: Product[]) => {
+      this.products = response;
     });
+    this.productsService.getProductsCount().subscribe((total:number) => this.totalRecords =total)
   }
   
   public onCreate() {
@@ -80,24 +84,42 @@ export class ProductListComponent implements OnInit {
   }
 
   public onAddToCart(product: Product){
-
+    if(product.quantity>0){
+      product.quantity-=1;
+      this.cartService.addToCart(product);
+    }
+    
   }
 
   public onUpdate(product: Product) {
     this.isCreation = false;
     this.isDialogVisible = true;
+  
     this.editedProduct.set(product);
+  
+    this.productsService.update(product).subscribe((updatedProduct) => {
+      if (updatedProduct) {
+        const index = this.products.findIndex(p => p.id === updatedProduct.id);
+        if (index !== -1) {
+          this.products[index] = updatedProduct; 
+        }
+      } 
+    });
   }
 
   public onDelete(product: Product) {
-    this.productsService.delete(product.id).subscribe();
+    this.productsService.delete(product.id).subscribe(()=>{
+      this.loadProducts();
+    });
   }
 
   public onSave(product: Product) {
     if (this.isCreation) {
       this.productsService.create(product).subscribe();
     } else {
-      this.productsService.update(product).subscribe();
+      this.productsService.update(product).subscribe(()=>{
+        this.loadProducts();
+      });
     }
     this.closeDialog();
   }

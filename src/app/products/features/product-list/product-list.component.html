@@ -1,0 +1,40 @@
+<h1 class="text-center">Liste des produits</h1>
+
+<p-button label="Créer produit" (onClick)="onCreate()" class="block text-center"/>
+
+<p-dataView #dv [value]="products">
+    <ng-template pTemplate="list" let-products>
+        @for (product of products; track product) {
+            <p-card class="block mb-2">
+                <span class="font-medium text-secondary text-sm">{{ product.category }}</span>
+                <div class="text-lg font-medium text-900 mt-2">{{ product.name }}</div>
+                <span class="font-medium text-secondary text-sm">{{ product.description }}</span>
+                <div class="text-lg font-medium text-900 mt-2">{{ product.price | currency: 'EUR' }}</div>
+                <ng-template pTemplate="footer">
+                    <div class="flex gap-3 mt-1">
+                        <p-button label="Acheter" severity="success" (onClick)="onAddToCart(product)"/>
+                        <p-button label="Modifier" severity="secondary" (onClick)="onUpdate(product)"/>
+                        <p-button label="Supprimer" severity="danger" (onClick)="onDelete(product)" />
+                    </div>
+                </ng-template>
+            </p-card>
+        }
+    </ng-template>
+</p-dataView>
+
+<p-paginator 
+    (onPageChange)="onPageChange($event)" 
+    [first]="first"
+    [rows]="rows" 
+    [totalRecords]="totalRecords" 
+    [rowsPerPageOptions]="[10, 20, 30]" />
+
+<p-dialog [(visible)]="isDialogVisible"
+    [style]="{ width: '50vw' }"
+    header="Ajout/Edition produit">
+    <app-product-form
+        [product]="editedProduct()"
+        (save)="onSave($event)"
+        (cancel)="onCancel()"
+    />
+</p-dialog>

@@ -115,7 +115,8 @@ export class ProductListComponent implements OnInit {
 
   public onSave(product: Product) {
     if (this.isCreation) {
-      this.productsService.create(product).subscribe();
+      this.productsService.create(product).subscribe(()=>
+      this.loadProducts());
     } else {
       this.productsService.update(product).subscribe(()=>{
         this.loadProducts();
